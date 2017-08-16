@@ -4,6 +4,7 @@
             [compojure.handler :as handler]
             [ring.middleware.json :as middleware]
             [compojure.route :as route]
+            [ring.adapter.jetty :as jetty]
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
