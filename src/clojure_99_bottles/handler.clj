@@ -1,24 +1,34 @@
 (ns clojure-99-bottles.handler
   (:use ring.util.response)
   (:require [compojure.core :refer :all]
+            [compojure.handler :as handler]
+            [ring.middleware.json :as middleware]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (defn link [text href]
   (str "<a href='" href "'>" text "</a>"))
 
+(defn take-one-down [i req & [ext]]
+  (let [ix (read-string i)]
+    (let [nextix (if (= ix 0) 99 (dec ix))]
+      {:count (str i " bottles of beer on the wall ") 
+        :action (if (= ix 0) "Start over" "Take one down")
+        :next (str (name (:scheme req)) "://" (:server-name req) ":" (:server-port req) "/" nextix ext)})))
+    
 (defroutes app-routes
   (GET "/" [] 
     (redirect "/99"))
-  (GET "/:i" [i]
-    (let [ix (read-string i)]
-      (str i " bottles of beer on the wall " 
-        (if (= ix 0)
-          (link "Start over" "/99")
-          (link "take one down." 
-            (dec 
-              (read-string i)))))))
+  (GET "/:i.json" request
+    {:body (take-one-down (:i (:params request)) request ".json")})
+  (GET "/:i" request
+    (let [d (take-one-down (:i (:params request)) request)]
+      (str 
+        (:count d) (link 
+          (:action d) (:next d)))))
   (route/not-found "Not Found"))
 
 (def app
-  (wrap-defaults app-routes site-defaults))
+  (-> (handler/site app-routes)
+      (middleware/wrap-json-body {:keywords? true})
+      middleware/wrap-json-response))
