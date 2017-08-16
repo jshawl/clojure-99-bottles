@@ -37,4 +37,4 @@
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (handler #'app-routes) {:port port :join? false})))
+    (jetty/run-jetty app-routes {:port port :join? false})))
