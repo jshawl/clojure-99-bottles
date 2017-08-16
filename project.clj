@@ -8,7 +8,6 @@
                  [ring/ring-json "0.3.1"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler clojure-99-bottles.handler/app}
-  :main clojure-99-bottles.handler
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.0"]]}})
