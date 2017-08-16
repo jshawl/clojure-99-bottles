@@ -32,3 +32,7 @@
   (-> (handler/site app-routes)
       (middleware/wrap-json-body {:keywords? true})
       middleware/wrap-json-response))
+
+(defn -main [& [port]]
+  (let [port (Integer. (or port (env :port) 5000))]
+    (jetty/run-jetty (site #'app) {:port port :join? false})))
